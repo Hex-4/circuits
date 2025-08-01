@@ -25,9 +25,14 @@ extends CharacterBody2D
 @export var gravity = 4000
 @export_range(0.0, 1.0) var friction = 0.06
 @export_range(0.0 , 1.0) var acceleration = 0.08
+@export var separation_dist = 300
 var dir: Vector2
+var positive = false
+var negative = false
+var shorted = false
 
 func _physics_process(delta):
+	print(positive)
 
 	dir = Input.get_vector("left", "right", "up", "down")
 	if dir != Vector2.ZERO:

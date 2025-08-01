@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3 uid="uid://cpd0tel55f87t"]
+
+[ext_resource type="Script" uid="uid://uyxnosjrv6dj" path="res://+smol.gd" id="1_atvgl"]
+[ext_resource type="Texture2D" uid="uid://b6eq3tqmrg46q" path="res://assets/pos-smol.png" id="1_npqxu"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_atvgl"]
+radius = 27.0
+
+[node name="+smol" type="CharacterBody2D" groups=["enemy"]]
+script = ExtResource("1_atvgl")
+
+[node name="Line2D" type="Line2D" parent="."]
+visible = false
+width = 6.96
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_npqxu")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_atvgl")
+
+[node name="RayCast2D" type="RayCast2D" parent="."]

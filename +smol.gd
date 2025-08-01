@@ -4,8 +4,7 @@ extends CharacterBody2D
 @export var radius = 601
 @export_range(0.0, 1.0) var friction = 0.06
 @export_range(0.0 , 1.0) var acceleration = 0.08
-@export var separation_dist = 300
-@export var inactive_radius = 1500
+@export var separation_dist = 600
 
 @onready var player = %Player
 var connected = false:
@@ -20,45 +19,49 @@ var connected = false:
 
 func _physics_process(delta):
 	# separation logic
-	
-	var separation_force = Vector2.ZERO
-	
-	for e in get_tree().get_nodes_in_group("enemy"):
-		if e == self:
-			continue
-		if position.distance_to(e.position) <= separation_dist:
-			separation_force += (-position.direction_to(e.position)) * (1 - position.distance_to(e.position) / separation_dist)
+	if !player:
+		player = get_node("../../Player")
+	if player:
+		var separation_force = Vector2.ZERO
 		
-	
-	var dir = position.direction_to(player.position)
-	
+		for e in get_tree().get_nodes_in_group("enemy"):
+			if e == self:
+				continue
+			if position.distance_to(e.position) <= separation_dist:
+				separation_force += (-position.direction_to(e.position)) * (1 - position.distance_to(e.position) / separation_dist)
+			
+		
+		var dir = position.direction_to(player.position)
+		
 
-	dir += separation_force * 250
-	dir = dir.normalized()
-	if position.distance_to(player.position) <= radius or player.positive or position.distance_to(player.position) > inactive_radius:
-		velocity.x = lerp(velocity.x, 0.0, friction)
-		velocity.y = lerp(velocity.y, 0.0, friction)
-	else:
-		velocity.x = lerp(velocity.x, dir.x * speed, acceleration)
-		velocity.y = lerp(velocity.y, dir.y * speed, acceleration)
-	
-	move_and_slide()
+		dir += separation_force * 250
+		dir = dir.normalized()
+		if position.distance_to(player.position) <= radius or player.positive:
+			velocity.x = lerp(velocity.x, 0.0, friction)
+			velocity.y = lerp(velocity.y, 0.0, friction)
+		else:
+			velocity.x = lerp(velocity.x, dir.x * speed, acceleration)
+			velocity.y = lerp(velocity.y, dir.y * speed, acceleration)
+		
+		move_and_slide()
 	
 func _process(delta: float) -> void:
-	$Line2D.points = [$Line2D.to_local(position), $Line2D.to_local(player.position)]
-	if position.distance_to(player.position) <= radius and not player.positive:
-		connected = true
-		$Line2D.visible = true
-	if position.distance_to(player.position) > radius:
-		connected = false
-		$Line2D.visible = false
-		
-	if player.positive and player.negative and connected:
-		$ShortLine.points = [$Line2D.to_local(position), $Line2D.to_local(player.negative.position)]
-		if player.immunity <= 0:
-			player.short()
-	else: 
-		$ShortLine.clear_points()
-		
+	if player:
+		$Line2D.points = [$Line2D.to_local(position), $Line2D.to_local(player.position)]
+		if position.distance_to(player.position) <= radius and not player.positive:
+			connected = true
+			$Line2D.visible = true
+		if position.distance_to(player.position) > radius:
+			connected = false
+			$Line2D.visible = false
+			
+		if player.positive and player.negative and connected:
+			$ShortLine.points = [$Line2D.to_local(position), $Line2D.to_local(player.negative.position)]
+			if player.immunity <= 0:
+				player.short()
+		else: 
+			$ShortLine.clear_points()
+			
 func damage():
+	$"../..".spawn()
 	queue_free()

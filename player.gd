@@ -27,12 +27,17 @@ extends CharacterBody2D
 @export_range(0.0 , 1.0) var acceleration = 0.08
 @export var separation_dist = 300
 var dir: Vector2
-var positive = false
-var negative = false
+var positive: CharacterBody2D
+var negative: CharacterBody2D
 var shorted = false
+var immunity = 5
 
 func _physics_process(delta):
-	print(positive)
+	$HUD.look_at(get_global_mouse_position())
+	
+	if immunity > 0:
+		immunity -= delta
+
 
 	dir = Input.get_vector("left", "right", "up", "down")
 	if dir != Vector2.ZERO:
@@ -49,3 +54,12 @@ func _physics_process(delta):
 			tween.tween_property(self, "rotation", weird_dir.angle_to(Vector2.DOWN), 0.4)
 	
 	move_and_slide()
+	
+func short():
+	immunity = 3
+	var t = get_tree().create_tween()
+	t.tween_property($ColorRect, "color", Color($ColorRect.color, 1), 0.1)
+	t.parallel().tween_property($Sprite2D/ColorRect, "color", Color($Sprite2D/ColorRect.color, 1), 0.04)
+	t.tween_property($ColorRect, "color", Color($ColorRect.color, 0), 0.2)
+	t.parallel().tween_interval(1)
+	t.tween_property($Sprite2D/ColorRect, "color", Color($Sprite2D/ColorRect.color, 0), 1.8)

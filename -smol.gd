@@ -14,9 +14,9 @@ var connected = false:
 		return connected
 	set(value):
 		if value == false and connected == true: # disconnect
-			player.negative = false
+			player.negative = null
 		elif value == true and connected == false: # connect
-			player.negative = true
+			player.negative = self
 		connected = value
 
 func _physics_process(delta):
@@ -53,3 +53,8 @@ func _process(delta: float) -> void:
 	if position.distance_to(player.position) > radius:
 		connected = false
 		$Line2D.visible = false
+		
+	
+
+func damage():
+	queue_free()

@@ -6,7 +6,7 @@
 [sub_resource type="CircleShape2D" id="CircleShape2D_atvgl"]
 radius = 27.0
 
-[node name="-smol" type="CharacterBody2D" groups=["enemy"]]
+[node name="-smol" type="CharacterBody2D" groups=["attackable", "enemy"]]
 script = ExtResource("1_i2xmn")
 
 [node name="Line2D" type="Line2D" parent="."]

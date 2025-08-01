@@ -1,7 +1,7 @@
 extends CharacterBody2D
 
 @export var speed = 400
-@export var radius = 400
+@export var radius = 601
 @export_range(0.0, 1.0) var friction = 0.06
 @export_range(0.0 , 1.0) var acceleration = 0.08
 @export var separation_dist = 300
@@ -13,9 +13,9 @@ var connected = false:
 		return connected
 	set(value):
 		if value == false and connected == true: # disconnect
-			player.positive = false
+			player.positive = null
 		elif value == true and connected == false: # connect
-			player.positive = true
+			player.positive = self
 		connected = value
 
 func _physics_process(delta):
@@ -52,3 +52,13 @@ func _process(delta: float) -> void:
 	if position.distance_to(player.position) > radius:
 		connected = false
 		$Line2D.visible = false
+		
+	if player.positive and player.negative and connected:
+		$ShortLine.points = [$Line2D.to_local(position), $Line2D.to_local(player.negative.position)]
+		if player.immunity <= 0:
+			player.short()
+	else: 
+		$ShortLine.clear_points()
+		
+func damage():
+	queue_free()

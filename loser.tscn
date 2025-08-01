@@ -1,0 +1,27 @@
+[gd_scene load_steps=2 format=3 uid="uid://dauuuhldewgxv"]
+
+[ext_resource type="Script" uid="uid://dnss08kpl2fdf" path="res://button.gd" id="1_7j20m"]
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+text = "haha skill issue you lose"
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 32.0
+offset_right = 130.0
+offset_bottom = 63.0
+text = "no point trying"
+script = ExtResource("1_7j20m")
+scene = "uid://dn11rx1ticyhy"

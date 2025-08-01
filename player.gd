@@ -26,6 +26,7 @@ extends CharacterBody2D
 @export_range(0.0, 1.0) var friction = 0.06
 @export_range(0.0 , 1.0) var acceleration = 0.08
 @export var separation_dist = 300
+@onready var life = $"HUD/Life"
 var dir: Vector2
 var positive: CharacterBody2D
 var negative: CharacterBody2D
@@ -62,6 +63,7 @@ func short():
 	var t = get_tree().create_tween()
 	t.tween_property($ColorRect, "color", Color($ColorRect.color, 1), 0.1)
 	t.parallel().tween_property($Sprite2D/ColorRect, "color", Color($Sprite2D/ColorRect.color, 1), 0.04)
+	t.tween_callback(life.decrease)
 	t.tween_property($ColorRect, "color", Color($ColorRect.color, 0), 0.2)
 	t.parallel().tween_interval(1)
 	t.tween_property($Sprite2D/ColorRect, "color", Color($Sprite2D/ColorRect.color, 0), 1.8)

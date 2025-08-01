@@ -5,6 +5,7 @@ extends CharacterBody2D
 @export_range(0.0, 1.0) var friction = 0.06
 @export_range(0.0 , 1.0) var acceleration = 0.08
 @export var separation_dist = 600
+@export var hits = 1
 
 
 @onready var player = %Player
@@ -18,6 +19,10 @@ var connected = false:
 		elif value == true and connected == false: # connect
 			player.negative = self
 		connected = value
+		
+func _ready() -> void:
+	set_process(false)
+	set_physics_process(false)
 
 func _physics_process(delta):
 	if !player:
@@ -61,5 +66,14 @@ func _process(delta: float) -> void:
 	
 
 func damage():
+	hits -= 1
+	var t = get_tree().create_tween()
+	t.set_ease(Tween.EASE_IN)
+	t.set_trans(Tween.TRANS_EXPO)
 	$"../..".spawn()
-	queue_free()
+	t.tween_property($"Sprite2D/ColorRect", "color", Color($Sprite2D/ColorRect.color, 1), 0.1)
+	if hits > 0:
+		t.tween_property($"Sprite2D/ColorRect", "color", Color($Sprite2D/ColorRect.color, 0), 0.2)
+	else:
+		t.tween_property(self, "scale", Vector2(0,0), 0.2)
+		t.tween_callback(queue_free)

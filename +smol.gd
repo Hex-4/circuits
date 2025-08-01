@@ -5,6 +5,7 @@ extends CharacterBody2D
 @export_range(0.0, 1.0) var friction = 0.06
 @export_range(0.0 , 1.0) var acceleration = 0.08
 @export var separation_dist = 600
+@export var hits = 1
 
 @onready var player = %Player
 var connected = false:
@@ -16,6 +17,10 @@ var connected = false:
 		elif value == true and connected == false: # connect
 			player.positive = self
 		connected = value
+		
+func _ready() -> void:
+	set_process(false)
+	set_physics_process(false)
 
 func _physics_process(delta):
 	# separation logic
@@ -55,13 +60,24 @@ func _process(delta: float) -> void:
 			connected = false
 			$Line2D.visible = false
 			
-		if player.positive and player.negative and connected:
+		if player.positive and player.negative and connected and player.negative.scale != Vector2.ZERO:
+			print(player.negative)
 			$ShortLine.points = [$Line2D.to_local(position), $Line2D.to_local(player.negative.position)]
 			if player.immunity <= 0:
 				player.short()
-		else: 
+		else:
 			$ShortLine.clear_points()
 			
 func damage():
+	hits -= 1
+	player.negative = null
+	var t = get_tree().create_tween()
 	$"../..".spawn()
-	queue_free()
+	t.set_ease(Tween.EASE_IN)
+	t.set_trans(Tween.TRANS_EXPO)
+	t.tween_property($"Sprite2D/ColorRect", "color", Color($Sprite2D/ColorRect.color, 1), 0.1)
+	if hits > 0:
+		t.tween_property($"Sprite2D/ColorRect", "color", Color($Sprite2D/ColorRect.color, 0), 0.2)
+	else:
+		t.tween_property(self, "scale", Vector2(0,0), 0.15)
+		t.tween_callback(queue_free)

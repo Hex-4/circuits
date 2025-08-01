@@ -1,0 +1,36 @@
+[gd_scene load_steps=4 format=3 uid="uid://bkx1637yp6kt5"]
+
+[ext_resource type="Script" uid="uid://dq0o6cm333qgx" path="res://-smol.gd" id="1_2c17q"]
+[ext_resource type="Texture2D" uid="uid://ddmlapohepnip" path="res://assets/neg-med.png" id="2_2c17q"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_atvgl"]
+radius = 27.0
+
+[node name="-med" type="CharacterBody2D" groups=["attackable", "enemy"]]
+script = ExtResource("1_2c17q")
+speed = 600
+radius = 400
+friction = 0.08
+acceleration = 0.1
+separation_dist = 350
+hits = 4
+
+[node name="Line2D" type="Line2D" parent="."]
+width = 8.0
+default_color = Color(0.0705882, 0.305882, 0.537255, 1)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+clip_children = 2
+texture = ExtResource("2_2c17q")
+
+[node name="ColorRect" type="ColorRect" parent="Sprite2D"]
+offset_left = -58.0
+offset_top = -52.0
+offset_right = 61.0
+offset_bottom = 51.0
+color = Color(1, 1, 1, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_atvgl")
+
+[node name="RayCast2D" type="RayCast2D" parent="."]

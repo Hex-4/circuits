@@ -4,6 +4,9 @@ extends Node2D
 @export var minus_smol: PackedScene
 @export var plus_med: PackedScene
 @export var minus_med: PackedScene
+@export var plus_big: PackedScene
+@export var minus_big: PackedScene
+
 
 @export var pickup_scene: PackedScene
 
@@ -12,6 +15,7 @@ extends Node2D
 @export var weights = {
 	smol = 95,
 	med = 5,
+	big = 0,
 }
 
 var rng: RandomNumberGenerator
@@ -48,6 +52,9 @@ func reweight(difference, value):
 	if nearby_chance < 0.25:
 		nearby_chance += difference * 0.01
 		
+	if value > 60:
+		weights.big += difference * 0.1
+		
 
 
 
@@ -81,6 +88,8 @@ func spawn():
 			spawn_smol(p_position)
 		"med":
 			spawn_med(p_position)
+		"big":
+			spawn_big(p_position)
 		_:
 			spawn_smol(p_position)
 	
@@ -119,6 +128,27 @@ func spawn_med(pos):
 	$Nodes.call_deferred("add_child", p)
 	
 	n = minus_med.instantiate()
+	
+	n.position = p.position + Vector2(randi_range(-offset, offset), randi_range(-offset, offset))
+	
+	$Nodes.call_deferred("add_child", n)
+	
+	if p.position.distance_to($Player.position) < 900 or n.position.distance_to($Player.position) < 900:
+		p.queue_free()
+		n.queue_free()
+		spawn()
+		
+func spawn_big(pos):
+	var n
+	var p
+	
+	p = plus_big.instantiate()
+
+	p.position = pos
+	
+	$Nodes.call_deferred("add_child", p)
+	
+	n = minus_big.instantiate()
 	
 	n.position = p.position + Vector2(randi_range(-offset, offset), randi_range(-offset, offset))
 	

@@ -1,0 +1,48 @@
+[gd_scene load_steps=4 format=3 uid="uid://cs847e35tgp77"]
+
+[ext_resource type="Script" uid="uid://uyxnosjrv6dj" path="res://+smol.gd" id="1_320hp"]
+[ext_resource type="Texture2D" uid="uid://7tn1w38nsfda" path="res://assets/pos-big.png" id="2_320hp"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_atvgl"]
+radius = 57.0351
+
+[node name="+big" type="CharacterBody2D" groups=["attackable", "enemy"]]
+script = ExtResource("1_320hp")
+speed = 600
+radius = 500
+friction = 0.4
+acceleration = 0.6
+separation_dist = 300
+hits = 8
+scraps = 10
+
+[node name="ShortLine" type="Line2D" parent="."]
+width = 8.0
+default_color = Color(0.996078, 0.682353, 0.203922, 1)
+
+[node name="Line2D" type="Line2D" parent="."]
+visible = false
+width = 8.0
+default_color = Color(0.619608, 0.156863, 0.207843, 1)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+clip_children = 2
+texture = ExtResource("2_320hp")
+
+[node name="ColorRect" type="ColorRect" parent="Sprite2D"]
+offset_left = -98.0
+offset_top = -98.0
+offset_right = 101.0
+offset_bottom = 95.0
+color = Color(1, 1, 1, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_atvgl")
+
+[node name="RayCast2D" type="RayCast2D" parent="."]
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

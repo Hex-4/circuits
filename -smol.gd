@@ -75,9 +75,9 @@ func damage():
 	t.set_trans(Tween.TRANS_EXPO)
 	if randf_range(0, 1) < $"../..".spawn_chance:
 		$"../..".spawn()
-	t.tween_property($"Sprite2D/ColorRect", "color", Color($Sprite2D/ColorRect.color, 1), 0.1)
+	t.tween_property($"Sprite2D/ColorRect", "color", Color($Sprite2D/ColorRect.color, 1), 0.05)
 	if hits > 0:
-		t.tween_property($"Sprite2D/ColorRect", "color", Color($Sprite2D/ColorRect.color, 0), 0.2)
+		t.tween_property($"Sprite2D/ColorRect", "color", Color($Sprite2D/ColorRect.color, 0), 0.1)
 	elif active:
 		active = false
 		player.scrap_count.text = str(int(player.scrap_count.text) + scraps)

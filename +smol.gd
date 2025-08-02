@@ -6,8 +6,12 @@ extends CharacterBody2D
 @export_range(0.0 , 1.0) var acceleration = 0.08
 @export var separation_dist = 600
 @export var hits = 1
+@export var scraps = 2
+var active = true
 
-@onready var player = %Player
+var camera: Camera2D
+
+@onready var player
 var connected = false:
 	get:
 		return connected
@@ -18,9 +22,11 @@ var connected = false:
 			player.positive = self
 		connected = value
 		
+		
 func _ready() -> void:
 	set_process(false)
 	set_physics_process(false)
+	
 
 func _physics_process(delta):
 	# separation logic
@@ -52,6 +58,7 @@ func _physics_process(delta):
 	
 func _process(delta: float) -> void:
 	if player:
+		camera = player.get_node("Camera")
 		$Line2D.points = [$Line2D.to_local(position), $Line2D.to_local(player.position)]
 		if position.distance_to(player.position) <= radius and not player.positive:
 			connected = true
@@ -61,23 +68,35 @@ func _process(delta: float) -> void:
 			$Line2D.visible = false
 			
 		if player.positive and player.negative and connected and player.negative.scale != Vector2.ZERO:
-			print(player.negative)
 			$ShortLine.points = [$Line2D.to_local(position), $Line2D.to_local(player.negative.position)]
-			if player.immunity <= 0:
-				player.short()
+			if player.immunity <= 0 and $Timer.is_stopped():
+				$Timer.start()
 		else:
 			$ShortLine.clear_points()
+			
 			
 func damage():
 	hits -= 1
 	player.negative = null
+	
 	var t = get_tree().create_tween()
-	$"../..".spawn()
+	if randf_range(0, 1) < $"../..".spawn_chance:
+		$"../..".spawn()
 	t.set_ease(Tween.EASE_IN)
 	t.set_trans(Tween.TRANS_EXPO)
 	t.tween_property($"Sprite2D/ColorRect", "color", Color($Sprite2D/ColorRect.color, 1), 0.1)
 	if hits > 0:
 		t.tween_property($"Sprite2D/ColorRect", "color", Color($Sprite2D/ColorRect.color, 0), 0.2)
-	else:
+	elif active:
+		active = false
+		player.scrap_count.text = str(int(player.scrap_count.text) + scraps)
+		$"../..".difficulty += scraps
 		t.tween_property(self, "scale", Vector2(0,0), 0.15)
 		t.tween_callback(queue_free)
+
+
+func _on_timer_timeout() -> void:
+	print("timeout!")
+	if player.positive and player.negative and connected and player.negative.scale != Vector2.ZERO:
+		print("shorting...")
+		player.short()

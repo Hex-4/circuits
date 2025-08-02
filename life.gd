@@ -24,8 +24,8 @@ func decrease():
 
 	
 func increase():
-	
-	capsules[life-1].texture.region.position.y = 0
+	print("increasing")
+	capsules[life].texture.region.position.y = 0
 	
 	life += 1
 	

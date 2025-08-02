@@ -6,9 +6,10 @@ extends CharacterBody2D
 @export_range(0.0 , 1.0) var acceleration = 0.08
 @export var separation_dist = 600
 @export var hits = 1
+@export var scraps = 2
+var active = true
 
-
-@onready var player = %Player
+@onready var player
 
 var connected = false:
 	get:
@@ -70,10 +71,14 @@ func damage():
 	var t = get_tree().create_tween()
 	t.set_ease(Tween.EASE_IN)
 	t.set_trans(Tween.TRANS_EXPO)
-	$"../..".spawn()
+	if randf_range(0, 1) < $"../..".spawn_chance:
+		$"../..".spawn()
 	t.tween_property($"Sprite2D/ColorRect", "color", Color($Sprite2D/ColorRect.color, 1), 0.1)
 	if hits > 0:
 		t.tween_property($"Sprite2D/ColorRect", "color", Color($Sprite2D/ColorRect.color, 0), 0.2)
-	else:
+	elif active:
+		active = false
+		player.scrap_count.text = str(int(player.scrap_count.text) + scraps)
+		$"../..".difficulty += scraps
 		t.tween_property(self, "scale", Vector2(0,0), 0.2)
 		t.tween_callback(queue_free)

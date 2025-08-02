@@ -47,6 +47,11 @@ func _physics_process(delta):
 	
 	if immunity > 0:
 		immunity -= delta
+		
+	if Input.is_action_just_pressed("a"):
+		speed -= 400
+	elif Input.is_action_just_released("a"):
+		speed += 400
 
 
 	dir = Input.get_vector("left", "right", "up", "down")

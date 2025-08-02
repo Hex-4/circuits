@@ -78,10 +78,12 @@ func _process(delta: float) -> void:
 			connected = false
 			$Line2D.visible = false
 			
-		if player.positive and player.negative and connected and player.negative.scale != Vector2.ZERO:
-			$ShortLine.points = [$Line2D.to_local(position), $Line2D.to_local(player.negative.position)]
-			if player.immunity <= 0 and $Timer.is_stopped():
-				$Timer.start()
+		if player.positive and player.negative and connected:
+			if is_instance_valid(player.positive) and is_instance_valid(player.negative):
+				if player.negative.scale > Vector2.ZERO:
+					$ShortLine.points = [$Line2D.to_local(position), $Line2D.to_local(player.negative.position)]
+					if player.immunity <= 0 and $Timer.is_stopped():
+						$Timer.start()
 		else:
 			$ShortLine.clear_points()
 			
@@ -90,7 +92,6 @@ func damage():
 	hits -= 1
 	if !player:
 		player = get_node("../../Player")
-	player.negative = null
 	
 	var t = get_tree().create_tween()
 	if randf_range(0, 1) < $"../..".spawn_chance:
@@ -103,6 +104,8 @@ func damage():
 	elif active:
 		active = false
 		player.scrap_count.text = str(int(player.scrap_count.text) + scraps)
+		if player.positive == self:
+			player.positive = null
 		$"../..".difficulty += scraps
 		$"../..".enemies.erase(self)
 		$"../Audio".pitch_scale = randf_range(0.5, 1.8)

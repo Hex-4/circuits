@@ -39,8 +39,9 @@ var held_pickup = null
 
 
 func _physics_process(delta):
-	var target_zoom = Vector2(0.5, 0.5) if positive and negative else Vector2(0.3, 0.3)
+	var target_zoom = Vector2(0.4, 0.4) if is_instance_valid(positive) and is_instance_valid(negative) else Vector2(0.3, 0.3)
 	$Camera.zoom = $Camera.zoom.move_toward(target_zoom, 0.3 * delta)
+	print(positive, negative)
 
 	
 	$HUD.look_at(get_global_mouse_position())

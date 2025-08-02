@@ -74,6 +74,8 @@ func _process(delta: float) -> void:
 	
 
 func damage():
+	if !player:
+		player = get_node("../../Player")
 	hits -= 1
 	var t = get_tree().create_tween()
 	t.set_ease(Tween.EASE_IN)
@@ -85,6 +87,8 @@ func damage():
 		t.tween_property($"Sprite2D/ColorRect", "color", Color($Sprite2D/ColorRect.color, 0), 0.1)
 	elif active:
 		active = false
+		if player.negative == self:
+			player.negative = null
 		player.scrap_count.text = str(int(player.scrap_count.text) + scraps)
 		$"../..".difficulty += scraps
 		$"../..".enemies.erase(self)

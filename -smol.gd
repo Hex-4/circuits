@@ -17,8 +17,10 @@ var connected = false:
 	set(value):
 		if value == false and connected == true: # disconnect
 			player.negative = null
+			$"../DisconnectAudio".play()
 		elif value == true and connected == false: # connect
 			player.negative = self
+			$"../ConnectAudio".play()
 		connected = value
 		
 func _ready() -> void:
@@ -80,5 +82,7 @@ func damage():
 		active = false
 		player.scrap_count.text = str(int(player.scrap_count.text) + scraps)
 		$"../..".difficulty += scraps
+		$"../Audio".play()
+		t.tween_property(self, "scale", Vector2(1.2, 1.2), 0.1)
 		t.tween_property(self, "scale", Vector2(0,0), 0.2)
 		t.tween_callback(queue_free)

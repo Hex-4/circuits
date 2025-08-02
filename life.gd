@@ -20,7 +20,9 @@ func decrease():
 	life -= 1
 	
 	if life == 0:
-		get_tree().change_scene_to_packed(loser)
+		var t = create_tween()
+		t.tween_interval(1.3)
+		t.tween_callback(get_tree().change_scene_to_packed.bind(loser))
 
 	
 func increase():

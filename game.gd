@@ -22,6 +22,8 @@ var rng: RandomNumberGenerator
 
 @export var pickup_chance = 0.6
 
+@export var max_pickups = 30
+
 @export var difficulty = 0:
 	get:
 		return difficulty
@@ -82,7 +84,7 @@ func spawn():
 		_:
 			spawn_smol(p_position)
 	
-	if randf_range(0, 1) < pickup_chance:
+	if randf_range(0, 1) < pickup_chance and len($Pickups.get_children()) <= max_pickups:
 		spawn_pickup(p_position)
 		
 func spawn_smol(pos):

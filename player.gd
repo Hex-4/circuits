@@ -50,6 +50,8 @@ func _physics_process(delta):
 
 
 	dir = Input.get_vector("left", "right", "up", "down")
+	
+	$Particles.direction = dir
 	if dir != Vector2.ZERO:
 		velocity.x = lerp(velocity.x, dir.x * speed, acceleration)
 		velocity.y = lerp(velocity.y, dir.y * speed, acceleration)
@@ -70,18 +72,19 @@ func _physics_process(delta):
 	
 func short():
 	immunity = 3
+	$LoseAudio.play()
 	var t = get_tree().create_tween()
 	t.tween_property($ColorRect, "color", Color($ColorRect.color, 1), 0.1)
 	t.parallel().tween_property($Sprite2D/ColorRect, "color", Color($Sprite2D/ColorRect.color, 1), 0.04)
 	t.tween_callback(life.decrease)
-	t.tween_property($ColorRect, "color", Color($ColorRect.color, 0), 0.2)
+	t.tween_property($ColorRect, "color", Color($ColorRect.color, 0), 0.4)
 	t.parallel().tween_interval(1)
 	t.tween_property($Sprite2D/ColorRect, "color", Color($Sprite2D/ColorRect.color, 0), 1.8)
 	
 
 func pickup(type):
 	held_pickup = type
-
+	$PickupAudio.play()
 	match type:
 		"speed":
 			(%PickupUI as Sprite2D).texture.region.position.y = 0
@@ -101,6 +104,12 @@ func pickup(type):
 			t.set_ease(Tween.EASE_IN)
 			t.set_trans(Tween.TRANS_EXPO)
 			t.tween_property(%PickupUI, "scale", Vector2(1, 1), 0.5)
+		"bomb":
+			(%PickupUI as Sprite2D).texture.region.position.y = 64 * 3
+			var t = create_tween()
+			t.set_ease(Tween.EASE_IN)
+			t.set_trans(Tween.TRANS_EXPO)
+			t.tween_property(%PickupUI, "scale", Vector2(1, 1), 0.5)
 		
 func use_pickup():
 	$PickupTimer.start(8)
@@ -110,12 +119,14 @@ func use_pickup():
 	match active_pickup:
 		"speed":
 			speed += 600
+			$UseAudio.play()
 			var t = create_tween()
 			t.set_ease(Tween.EASE_IN)
 			t.set_trans(Tween.TRANS_EXPO)
 			t.tween_property(%PickupUI, "scale", Vector2(0, 0), 0.5)
 		"shoot":
 			$HUD/Blaster/Timer.wait_time = 0.05
+			$UseAudio.play()
 			var t = create_tween()
 			t.set_ease(Tween.EASE_IN)
 			t.set_trans(Tween.TRANS_EXPO)
@@ -126,11 +137,32 @@ func use_pickup():
 				$HUD/Life.increase()
 			else:
 				scrap_count.text = str(int(scrap_count.text) + 30)
+			$UseAudio.play()
 			var t = create_tween()
 			t.set_ease(Tween.EASE_IN)
 			t.set_trans(Tween.TRANS_EXPO)
 			t.tween_property(%PickupUI, "scale", Vector2(0, 0), 0.5)
 			active_pickup = null
+		"bomb":
+			$BombAudio.play()
+			var bt = create_tween()
+			bt.tween_property($ColorRect, "color", Color($ColorRect.color, 1), 0.04)
+			bt.tween_callback(explode_bomb)
+			bt.tween_property($ColorRect, "color", Color($ColorRect.color, 0), 0.4)
+			var t = create_tween()
+			t.set_ease(Tween.EASE_IN)
+			t.set_trans(Tween.TRANS_EXPO)
+			t.tween_property(%PickupUI, "scale", Vector2(0, 0), 0.5)
+			active_pickup = null
+
+func explode_bomb():
+	
+
+	for enemy: PhysicsBody2D in $"Bomb Area".get_overlapping_bodies():
+		if enemy.is_in_group("enemy"):
+			for i in range(enemy.hits):
+				enemy.damage()
+
 
 func _on_pickup_timer_timeout() -> void:
 	match active_pickup:

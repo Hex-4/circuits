@@ -43,8 +43,10 @@ func _physics_process(delta):
 	$Camera.zoom = $Camera.zoom.move_toward(target_zoom, 0.3 * delta)
 	print(positive, negative)
 
-	
-	$HUD.look_at(get_global_mouse_position())
+	if Input.get_vector("aim_up", "aim_down", "aim_left", "aim_right"):
+		$HUD.look_at(Input.get_vector("aim_left", "aim_right", "aim_up", "aim_down") + position)
+	else:
+		$HUD.look_at(get_global_mouse_position())
 	
 	if immunity > 0:
 		immunity -= delta
@@ -53,6 +55,8 @@ func _physics_process(delta):
 		speed -= 400
 	elif Input.is_action_just_released("a"):
 		speed += 400
+		
+	print(speed)
 
 
 	dir = Input.get_vector("left", "right", "up", "down")
@@ -77,6 +81,7 @@ func _physics_process(delta):
 	move_and_slide()
 	
 func short():
+	$Camera.add_trauma(2)
 	immunity = 3
 	$LoseAudio.play()
 	var t = get_tree().create_tween()
@@ -122,8 +127,10 @@ func use_pickup():
 	owner.difficulty += 5
 	active_pickup = held_pickup
 	held_pickup = null
+	
 	match active_pickup:
 		"speed":
+			$Camera.add_trauma(0.2)
 			speed += 600
 			$UseAudio.play()
 			var t = create_tween()
@@ -131,6 +138,7 @@ func use_pickup():
 			t.set_trans(Tween.TRANS_EXPO)
 			t.tween_property(%PickupUI, "scale", Vector2(0, 0), 0.5)
 		"shoot":
+			$Camera.add_trauma(0.2)
 			$HUD/Blaster/Timer.wait_time = 0.05
 			$UseAudio.play()
 			var t = create_tween()
@@ -138,6 +146,7 @@ func use_pickup():
 			t.set_trans(Tween.TRANS_EXPO)
 			t.tween_property(%PickupUI, "scale", Vector2(0, 0), 0.5)
 		"life":
+			$Camera.add_trauma(0.2)
 			if $HUD/Life.life < 3:
 				print("relived")
 				$HUD/Life.increase()
@@ -150,6 +159,7 @@ func use_pickup():
 			t.tween_property(%PickupUI, "scale", Vector2(0, 0), 0.5)
 			active_pickup = null
 		"bomb":
+			$Camera.add_trauma(1)
 			$BombAudio.play()
 			var bt = create_tween()
 			bt.tween_property($ColorRect, "color", Color($ColorRect.color, 1), 0.04)

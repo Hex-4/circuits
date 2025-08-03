@@ -20,15 +20,15 @@ extends Node2D
 
 var rng: RandomNumberGenerator
 
-@export var spawn_chance = 0.3
+@export var spawn_chance = 0.25
 
-@export var nearby_chance = 0.05
+@export var nearby_chance = 0.0
 
 @export var pickup_chance = 0.6
 
 @export var max_pickups = 30
 
-var enemies: Array[CharacterBody2D] = []
+
 
 @export var difficulty = 0:
 	get:
@@ -36,7 +36,6 @@ var enemies: Array[CharacterBody2D] = []
 	set(value):
 		reweight(value - difficulty, value)
 		difficulty = value
-		
 		
 
 # Called when the node enters the scene tree for the first time.
@@ -71,9 +70,11 @@ func _on_player_ready() -> void:
 		spawn()
 		print("spawned something")
 
+
+
 func spawn():
 	print("Spawn function start")
-	if len(enemies) < 300:
+	if get_tree().get_node_count_in_group("enemy") < 300:
 		if !rng:
 			print("RNG not initialized. Initializing...")
 			rng = RandomNumberGenerator.new()
@@ -130,16 +131,15 @@ func spawn_smol(pos):
 	n.position = p.position + Vector2(randi_range(-offset, offset), randi_range(-offset, offset))
 
 	if p and n:
-		$Nodes.call_deferred("add_child", p)
-		$Nodes.call_deferred("add_child", n)
+		$Nodes.add_child(p)
+		$Nodes.add_child(n)
 
 	if p.position.distance_to($Player.position) < 900 or n.position.distance_to($Player.position) < 900:
 		p.queue_free()
 		n.queue_free()
 		return
 
-	enemies.append(p)
-	enemies.append(n)
+
 
 func spawn_med(pos):
 	print("spawn_med at", pos)
@@ -152,7 +152,8 @@ func spawn_med(pos):
 	p.position = pos
 	
 	if p:
-		$Nodes.call_deferred("add_child", p)
+		$Nodes.add_child(p)
+		
 	print("Plus med added")
 	
 	n = minus_med.instantiate()
@@ -161,7 +162,8 @@ func spawn_med(pos):
 	n.position = p.position + Vector2(randi_range(-offset, offset), randi_range(-offset, offset))
 	
 	if n:
-		$Nodes.call_deferred("add_child", n)
+
+		$Nodes.add_child(n)
 	print("Minus med added")
 	
 	if p.position.distance_to($Player.position) < 900 or n.position.distance_to($Player.position) < 900:
@@ -172,8 +174,7 @@ func spawn_med(pos):
 		spawn()
 	else:
 		print("Med enemies added")
-		enemies.append(p)
-		enemies.append(n)
+
 		
 func spawn_big(pos):
 	print("spawn_big at", pos)
@@ -186,7 +187,7 @@ func spawn_big(pos):
 	p.position = pos
 	
 	if p:
-		$Nodes.call_deferred("add_child", p)
+		$Nodes.add_child(p)
 	print("Plus big added")
 	
 	n = minus_big.instantiate()
@@ -195,7 +196,7 @@ func spawn_big(pos):
 	n.position = p.position + Vector2(randi_range(-offset, offset), randi_range(-offset, offset))
 	
 	if n:
-		$Nodes.call_deferred("add_child", n)
+		$Nodes.add_child(n)
 	print("Minus big added")
 	
 	if p.position.distance_to($Player.position) < 900 or n.position.distance_to($Player.position) < 900:
@@ -206,8 +207,7 @@ func spawn_big(pos):
 		spawn()
 	else:
 		print("Big enemies added")
-		enemies.append(p)
-		enemies.append(n)
+
 		
 func spawn_pickup(pos):
 	print("spawn_pickup at", pos)

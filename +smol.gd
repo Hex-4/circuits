@@ -12,6 +12,8 @@ var active = true
 var camera: Camera2D
 
 @onready var player
+@onready var max_hits = hits
+
 var connected = false:
 	get:
 		return connected
@@ -32,7 +34,7 @@ func _ready() -> void:
 func separate():
 	var separation_force = Vector2.ZERO
 		
-	for e in $"../..".enemies:
+	for e in get_tree().get_nodes_in_group("enemy"):
 		if e:
 			if e == self:
 				continue
@@ -107,7 +109,7 @@ func damage():
 		if player.positive == self:
 			player.positive = null
 		$"../..".difficulty += scraps
-		$"../..".enemies.erase(self)
+		player.get_node("Camera").add_trauma(0.3)
 		$"../Audio".pitch_scale = randf_range(0.5, 1.8)
 		$"../Audio".play()
 		t.tween_property(self, "scale", Vector2(1.2, 1.2), 0.1)

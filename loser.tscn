@@ -272,6 +272,7 @@ text = "700"
 label_settings = SubResource("LabelSettings_v50f1")
 
 [node name="CheckBox" type="CheckBox" parent="."]
+layout_mode = 0
 offset_left = 60.0
 offset_top = 558.0
 offset_right = 294.0

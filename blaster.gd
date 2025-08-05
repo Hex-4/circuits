@@ -19,8 +19,6 @@ func _process(delta: float) -> void:
 		
 		owner.add_child(b)
 		
-		var t = create_tween()
-		t.tween_property($Flash, "scale", Vector2(1,1), 0.05)
-		t.tween_property($Flash, "scale", Vector2(0,0), 0.1)
+
 		
 		$Timer.start()

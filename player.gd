@@ -35,14 +35,15 @@ var shorted = false
 var immunity = 5
 var active_pickup = null
 var held_pickup = null
+var rotation_tween: Tween
 
+var last_connection_state = false
+var target_zoom = Vector2(0.3, 0.3)
 
 
 func _physics_process(delta):
-	var target_zoom = Vector2(0.4, 0.4) if is_instance_valid(positive) and is_instance_valid(negative) else Vector2(0.3, 0.3)
-	$Camera.zoom = $Camera.zoom.move_toward(target_zoom, 0.3 * delta)
-	print(positive, negative)
 
+#
 	if Input.get_vector("aim_up", "aim_down", "aim_left", "aim_right"):
 		$HUD.look_at(Input.get_vector("aim_left", "aim_right", "aim_up", "aim_down") + position)
 	else:
@@ -56,12 +57,10 @@ func _physics_process(delta):
 	elif Input.is_action_just_released("a"):
 		speed += 400
 		
-	print(speed)
 
 
 	dir = Input.get_vector("left", "right", "up", "down")
 	
-	$Particles.direction = dir
 	if dir != Vector2.ZERO:
 		velocity.x = lerp(velocity.x, dir.x * speed, acceleration)
 		velocity.y = lerp(velocity.y, dir.y * speed, acceleration)
@@ -69,11 +68,15 @@ func _physics_process(delta):
 		velocity.x = lerp(velocity.x, 0.0, friction)
 		velocity.y = lerp(velocity.y, 0.0, friction)
 		
-	if dir != Vector2.ZERO:
-		var tween = get_tree().create_tween()
-		var weird_dir = Vector2(dir.x, -dir.y)
-		if rotation != weird_dir.angle_to(Vector2.DOWN):
-			tween.tween_property(self, "rotation", weird_dir.angle_to(Vector2.DOWN), 0.4)
+	var weird_dir = Vector2(dir.x, -dir.y)
+	var target_rotation = weird_dir.angle_to(Vector2.DOWN)
+	
+	if dir != Vector2.ZERO and abs(rotation - target_rotation) > 0.1:
+		if rotation_tween:
+			rotation_tween.kill()
+		rotation_tween = get_tree().create_tween()
+		rotation_tween.tween_property(self, "rotation", target_rotation, 0.4)
+
 			
 	if Input.is_action_just_pressed("b"):
 		use_pickup()
@@ -148,7 +151,6 @@ func use_pickup():
 		"life":
 			$Camera.add_trauma(0.2)
 			if $HUD/Life.life < 3:
-				print("relived")
 				$HUD/Life.increase()
 			else:
 				scrap_count.text = str(int(scrap_count.text) + 30)

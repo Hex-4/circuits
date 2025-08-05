@@ -8,6 +8,7 @@ extends CharacterBody2D
 @export var hits = 1
 @export var scraps = 2
 var active = true
+var damage_tween: Tween
 
 @onready var player
 
@@ -50,7 +51,11 @@ func _physics_process(delta):
 	if player:
 		
 		var dir = position.direction_to(player.position)
-		var separation_force = separate()
+		var separation_force
+		if false:
+			separation_force = separate()
+		else:
+			separation_force = Vector2.ZERO
 
 		dir += separation_force * 250
 		dir = dir.normalized()
@@ -79,7 +84,10 @@ func damage():
 	if !player:
 		player = get_node("../../Player")
 	hits -= 1
-	var t = get_tree().create_tween()
+	if damage_tween:
+		damage_tween.kill()
+	damage_tween = create_tween()
+	var t = damage_tween
 	t.set_ease(Tween.EASE_IN)
 	t.set_trans(Tween.TRANS_EXPO)
 	if randf_range(0, 1) < $"../..".spawn_chance:

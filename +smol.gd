@@ -9,6 +9,8 @@ extends CharacterBody2D
 @export var scraps = 2
 var active = true
 
+var damage_tween: Tween
+
 var camera: Camera2D
 
 @onready var player
@@ -50,6 +52,7 @@ func _physics_process(delta):
 	if !player:
 		player = get_node("../../Player")
 	if player:
+
 		
 		var dir = position.direction_to(player.position)
 		
@@ -95,7 +98,10 @@ func damage():
 	if !player:
 		player = get_node("../../Player")
 	
-	var t = get_tree().create_tween()
+	if damage_tween:
+		damage_tween.kill()
+	damage_tween = create_tween()
+	var t = damage_tween
 	if randf_range(0, 1) < $"../..".spawn_chance:
 		$"../..".spawn()
 	t.set_ease(Tween.EASE_IN)
@@ -104,6 +110,7 @@ func damage():
 	if hits > 0:
 		t.tween_property($"Sprite2D/ColorRect", "color", Color($Sprite2D/ColorRect.color, 0), 0.1)
 	elif active:
+		print("DYING")
 		active = false
 		player.scrap_count.text = str(int(player.scrap_count.text) + scraps)
 		if player.positive == self:
